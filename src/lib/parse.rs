@@ -40,6 +40,7 @@ impl Parse {
         self.part.next().ok_or(ParseError::EndOfStream)
     }
 
+    ///获取命令中的下一个字符串
     pub(crate) fn next_string(&mut self) -> Result<String, ParseError> {
         match self.next()? {
             Frame::Simple(text) => Ok(text),
@@ -47,9 +48,11 @@ impl Parse {
                 let src = data.to_vec();
                 String::from_utf8(src).map_err(|_| "解析的比特无法转化为字符串".into())
             }
-            frame => {
-                Err(format!("解析错误，预计获取的帧为简单字符串或大容量比特，实际获取的为:{}",frame).into())
-            }
+            frame => Err(format!(
+                "解析错误，预计获取的帧为简单字符串或大容量比特，实际获取的为:{}",
+                frame
+            )
+            .into()),
         }
     }
 }
@@ -65,5 +68,3 @@ impl From<String> for ParseError {
         ParseError::Other(text.into())
     }
 }
-
-
